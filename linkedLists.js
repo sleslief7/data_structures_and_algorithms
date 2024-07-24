@@ -122,19 +122,32 @@ class LinkedList {
   }
 
   removeAt(index) {
-    if (index > this.size) return null;
+    if (index >= this.size) return;
     let next = this.head;
     if (index === 0) {
       this.head = next.nextNode;
       this.size--;
       return;
     }
+    let prev = null;
     for (let i = 0; i < index; i++) {
+      prev = next;
       next = next.nextNode;
     }
-    let prev = this.at(index - 1);
-    next = next.nextNode;
-    prev.nextNode = next;
+    prev.nextNode = next.nextNode;
     this.size--;
   }
 }
+
+let myList = new LinkedList();
+myList.append(1);
+myList.append(2);
+myList.append(3);
+myList.append(4);
+myList.append(5);
+myList.append(6);
+myList.append(7);
+myList.append(8);
+console.log(myList.toString());
+myList.removeAt(5);
+console.log(myList.toString());
