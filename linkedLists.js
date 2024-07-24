@@ -53,10 +53,45 @@ class LinkedList {
       currentIndex++;
       next = next.nextNode;
     }
-    return next?.value ?? null;
+    return next;
   }
 
-  pop() {}
+  pop() {
+    if (this.size <= 0) return undefined;
+    if (this.size === 1) {
+      this.head = null;
+      this.size--;
+      return;
+    }
+    let last = this.head;
+    while (last.nextNode.nextNode) {
+      last = last.nextNode;
+    }
+    this.size--;
+    last.nextNode = null;
+  }
+
+  contains(value) {
+    if (this.size <= 0) return false;
+    let next = this.head;
+    while (next.nextNode) {
+      if (next.value === value) return true;
+      next = next.nextNode;
+    }
+    return false;
+  }
+
+  find(value) {
+    if (this.size <= 0) return null;
+    let index = 0;
+    let next = this.head;
+    while (next.nextNode) {
+      if (next.value === value) return index;
+      next = next.nextNode;
+      index++;
+    }
+    return null;
+  }
 
   toString() {
     let str = '';
@@ -68,15 +103,38 @@ class LinkedList {
     }
     return str;
   }
-}
 
-const myList = new LinkedList();
-myList.append(24);
-myList.append(1);
-myList.append(25);
-myList.prepend(0);
-//console.log(myList.getSize());
-console.log(myList.toString());
-// console.log(myList.getHead());
-// console.log(myList.getTail());
-console.log(myList.at(4));
+  insertAt(value, index) {
+    if (index === 0) {
+      this.head = new Node(value, this.head);
+      this.size++;
+      return;
+    }
+    if (this.size < index) {
+      index = this.size;
+    }
+    let next = this.head;
+    for (let i = 0; i < index - 1; i++) {
+      next = next.nextNode;
+    }
+    next.nextNode = new Node(value, next.nextNode);
+    this.size++;
+  }
+
+  removeAt(index) {
+    if (index > this.size) return null;
+    let next = this.head;
+    if (index === 0) {
+      this.head = next.nextNode;
+      this.size--;
+      return;
+    }
+    for (let i = 0; i < index; i++) {
+      next = next.nextNode;
+    }
+    let prev = this.at(index - 1);
+    next = next.nextNode;
+    prev.nextNode = next;
+    this.size--;
+  }
+}
