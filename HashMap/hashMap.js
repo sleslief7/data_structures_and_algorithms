@@ -45,19 +45,6 @@ class HashMap {
     this.entries++;
   }
 
-  getEntries() {
-    let pairs = [];
-
-    for (let i = 0; i < this.capacity; i++) {
-      let cursor = this.buckets[i];
-      while (cursor) {
-        pairs.push([cursor.key, cursor.value]);
-        cursor = cursor.next;
-      }
-    }
-    return pairs;
-  }
-
   get(key) {
     let index = this.hash(key);
 
@@ -106,6 +93,51 @@ class HashMap {
     return this.entries;
   }
 
+  clear() {
+    this.capacity = 16;
+    this.loadFactor = 0.8;
+    this.entries = 0;
+    this.buckets = new Array(this.capacity).fill(null);
+  }
+
+  keys() {
+    let keysArr = [];
+
+    for (let i = 0; i < this.capacity; i++) {
+      let cursor = this.buckets[i];
+      while (cursor) {
+        keysArr.push(cursor.key);
+        cursor = cursor.next;
+      }
+    }
+    return keysArr;
+  }
+  values() {
+    let valuesArr = [];
+
+    for (let i = 0; i < this.capacity; i++) {
+      let cursor = this.buckets[i];
+      while (cursor) {
+        valuesArr.push(cursor.value);
+        cursor = cursor.next;
+      }
+    }
+    return valuesArr;
+  }
+
+  getEntries() {
+    let pairs = [];
+
+    for (let i = 0; i < this.capacity; i++) {
+      let cursor = this.buckets[i];
+      while (cursor) {
+        pairs.push([cursor.key, cursor.value]);
+        cursor = cursor.next;
+      }
+    }
+    return pairs;
+  }
+
   getStringifiedObj() {
     const pairs = this.getEntries();
     if (pairs.length === 0) return '{ }';
@@ -122,5 +154,5 @@ test.set('apple', 'green');
 test.set('Carlos', 'red');
 test.set('Carla', 'yellow');
 test.set('apple', 'red');
-console.log(test.getStringifiedObj());
-console.log(test.get('banan'));
+test.remove('banana');
+console.log(test.getEntries());
