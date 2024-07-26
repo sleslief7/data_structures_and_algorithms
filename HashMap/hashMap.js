@@ -8,7 +8,7 @@ class Node {
 class HashMap {
   constructor() {
     this.capacity = 16;
-    this.loadFactor = 0.8;
+    this.loadFactor = 0.75;
     this.entries = 0;
     this.buckets = new Array(this.capacity).fill(null);
   }
@@ -29,6 +29,10 @@ class HashMap {
     let index = this.hash(key);
     let node = new Node(key, value);
 
+    if (index < 0 || index >= this.buckets.length) {
+      throw new Error('Trying to access index out of bound');
+    }
+
     if (!this.buckets[index]) {
       this.buckets[index] = node;
     } else {
@@ -43,6 +47,21 @@ class HashMap {
       nextNode.next = node;
     }
     this.entries++;
+
+    if (this.entries > this.capacity * this.loadFactor) {
+      this.grow();
+    }
+  }
+
+  grow() {
+    let copy = this.getEntries();
+    this.capacity = this.capacity * 2;
+    this.entries = 0;
+    this.buckets = new Array(this.capacity).fill(null);
+
+    for (let i = 0; i < copy.length; i++) {
+      this.set(copy[i][0], copy[i][1]);
+    }
   }
 
   get(key) {
@@ -95,47 +114,31 @@ class HashMap {
 
   clear() {
     this.capacity = 16;
-    this.loadFactor = 0.8;
+    this.loadFactor = 0.75;
     this.entries = 0;
     this.buckets = new Array(this.capacity).fill(null);
   }
 
   keys() {
-    let keysArr = [];
-
-    for (let i = 0; i < this.capacity; i++) {
-      let cursor = this.buckets[i];
-      while (cursor) {
-        keysArr.push(cursor.key);
-        cursor = cursor.next;
-      }
-    }
-    return keysArr;
+    return this.mapEntries((c) => c.key);
   }
   values() {
-    let valuesArr = [];
-
-    for (let i = 0; i < this.capacity; i++) {
-      let cursor = this.buckets[i];
-      while (cursor) {
-        valuesArr.push(cursor.value);
-        cursor = cursor.next;
-      }
-    }
-    return valuesArr;
+    return this.mapEntries((c) => c.value);
+  }
+  getEntries() {
+    return this.mapEntries((c) => [c.key, c.value]);
   }
 
-  getEntries() {
-    let pairs = [];
-
+  mapEntries(f) {
+    let results = [];
     for (let i = 0; i < this.capacity; i++) {
       let cursor = this.buckets[i];
       while (cursor) {
-        pairs.push([cursor.key, cursor.value]);
+        results.push(f(cursor));
         cursor = cursor.next;
       }
     }
-    return pairs;
+    return results;
   }
 
   getStringifiedObj() {
@@ -148,11 +151,6 @@ class HashMap {
   }
 }
 
-const test = new HashMap();
-test.set('banana', 'yellow');
-test.set('apple', 'green');
-test.set('Carlos', 'red');
-test.set('Carla', 'yellow');
-test.set('apple', 'red');
-test.remove('banana');
-console.log(test.getEntries());
+// const test = new HashMap();
+// test.set('apple', 'red');
+// console.log(test.getEntries());
